@@ -1,0 +1,44 @@
+## Names of sellers to scan for as they appear on documents
+## Case insensitive, may include spaces, use new line for each
+
+McMaster-Carr
+Travers Tool
+Fastenal
+Gerlinger
+
+Oil Changers
+All American
+Advanced Metal Finishing
+Advanced Metal Finishing
+Costco
+Costco
+Quality
+EGM LLC
+Roseville Precision
+SendCutSend
+PrecisionBits
+Coval
+Mencom
+Beckhoff
+Advanced Gas
+ULine
+DigiKey
+Frank's Septic
+Recology
+Micro 100
+Formlabs
+MSC
+Slideways
+LGG Industrial
+Festo
+PCBLinear
+SESSA MFG
+Tire Pros
+Powermatic
+Reid Supply
+Advanced World Products
+Yaskawa
+ebay
+Forbo Siegling LLC
+Ingersoll Rand
+Ampec
