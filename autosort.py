@@ -72,15 +72,33 @@ def get_seller(text):
         if text.lower().find(seller.lower()) >= 0:
             return seller
 
-def process_image(im):
-    
+def osr(im):
+    raw = tes.image_to_osd(im)
+    words = raw.replace(": ","\n").split("\n")
+
+    return {words[i].strip():words[i+1].strip() for i in range(0, len(words)-1, 2)}
+
+def ocr_date_and_seller(im):
     text = tes.image_to_string(im, config='--psm 11')
 
-    date = get_date(text)
-    seller = get_seller(text)
+
+    return (get_date(text), get_seller(text))
+
+def process_image(im):
+
+    date, seller = ocr_date_and_seller(im) 
+    rotation = 0
+
+    if (not (date or seller)):
+        d = osr(im)
+        rotation = int(d['Rotate'])
+        if rotation == 0:
+            return {"date": None, "seller": None}
+        print("correcting orientation...")
+        date, seller = ocr_date_and_seller(im.rotate(rotation)) 
     
 
-    return {"date": date, "seller": seller }
+    return {"date": date, "seller": seller, "rotation": rotation }
 
 def name_image(im_meta):
     date_str = im_meta["date"] or "Unknown"
@@ -101,7 +119,14 @@ def process_images():
             print("couldn't open file {}".format(filename))
             continue
         
-        im_meta = process_image(im)
+        try:
+            im_meta = process_image(im)
+        except Exception as e:
+            im_meta = {"date": None, "seller": None}
+            print("Exception occured while processing file `{}`:".format(filename))
+            print(e)
+
+
         
         im_meta["filename"] = filename
 
@@ -122,7 +147,8 @@ def process_images():
 def save_completed():
     for i, name in enumerate(complete):
         print("saving {}/{}...".format(i+1, len(complete)))
-        images = [Image.open(input_path / im_meta["filename"]) for im_meta in complete[name]]
+
+        images = [Image.open(input_path / im_meta["filename"]).rotate(im_meta.get("rotation",0)) for im_meta in complete[name]]
 
         #saves all the images as a pdf
         images[0].save(
